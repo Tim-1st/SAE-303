@@ -1,11 +1,103 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="fr">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ok</title>
+    <title>CGR Sarcelles - Mon Cinéma Préféré</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: Arial, sans-serif; background: linear-gradient(135deg, #667eea, #764ba2); color: #333; }
+        .container { max-width: 1000px; margin: 0 auto; padding: 20px; }
+        header { background: rgba(255,255,255,0.9); text-align: center; padding: 30px 0; }
+        h1 { font-size: 2.5rem; color: #2c3e50; margin-bottom: 10px; }
+        .section { background: rgba(255,255,255,0.9); margin: 20px 0; padding: 30px; border-radius: 15px; }
+        #map { height: 400px; border-radius: 10px; margin: 20px 0; }
+        .info { display: flex; gap: 20px; flex-wrap: wrap; margin: 20px 0; }
+        .info div { background: #f8f9fa; padding: 15px; border-radius: 8px; flex: 1; min-width: 200px; }
+        .stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 15px; }
+        .stat { background: linear-gradient(135deg, #667eea, #764ba2); color: white; padding: 20px; border-radius: 10px; text-align: center; }
+        .stat.fav { background: linear-gradient(135deg, #ff4757, #ff3742); }
+        .stat h3 { font-size: 2rem; margin-bottom: 5px; }
+        footer { text-align: center; color: white; padding: 20px; }
+        @media (max-width: 768px) { h1 { font-size: 2rem; } .info { flex-direction: column; } }
+    </style>
 </head>
 <body>
-    Hello world ! Project 301 KKKKK
+    <header>
+        <div class="container">
+            <h1>CGR Sarcelles - Mon Cinéma Préféré</h1>
+            <p>Centre Commercial O'Parinor, 95200 Sarcelles</p>
+        </div>
+    </header>
+
+    <div class="container">
+        <div class="section">
+            <h2>Mon Cinéma Préféré</h2>
+            <div class="info">
+                <div><strong>Salles :</strong> 12 salles climatisées</div>
+                <div><strong>Technologies :</strong> IMAX, 4DX, Dolby Atmos</div>
+                <div><strong>Accès :</strong> Métro ligne 13</div>
+            </div>
+        </div>
+
+        <div class="section">
+            <h2>Localisation</h2>
+            <div id="map"></div>
+            <p style="text-align: center; margin-top: 10px;">
+                * Mon cinéma préféré | + Autres cinémas
+            </p>
+        </div>
+
+        <div class="section">
+            <h2>Statistiques Île-de-France</h2>
+            <div class="stats">
+                <div class="stat"><h3>350+</h3>Cinémas</div>
+                <div class="stat"><h3>8</h3>Départements</div>
+                <div class="stat"><h3>12M</h3>Habitants</div>
+                <div class="stat fav"><h3>1</h3>Mon préféré</div>
+            </div>
+        </div>
+    </div>
+
+    <footer>
+        <div class="container">
+            <p>SAE 303 - Intégration Google Maps API</p>
+        </div>
+    </footer>
+
+    <script>
+        let map;
+        const cgr = { lat: 48.9936, lng: 2.3772 };
+        
+        function initMap() {
+            map = new google.maps.Map(document.getElementById('map'), {
+                zoom: 12,
+                center: cgr
+            });
+            
+            new google.maps.Marker({
+                position: cgr,
+                map: map,
+                title: 'CGR Sarcelles - Mon cinéma préféré',
+                icon: 'data:image/svg+xml;charset=UTF-8,' + encodeURIComponent(
+                    '<svg width="30" height="30" xmlns="http://www.w3.org/2000/svg"><circle cx="15" cy="15" r="12" fill="#ff4757" stroke="white" stroke-width="2"/><text x="15" y="20" font-size="14" fill="white" text-anchor="middle">*</text></svg>'
+                )
+            });
+            
+            const infoWindow = new google.maps.InfoWindow({
+                content: '<div style="padding:10px;"><h4>CGR Sarcelles</h4><p><strong>Mon cinéma préféré</strong></p><p>Centre Commercial O\'Parinor</p><p>Lat: 48.9936 | Lng: 2.3772</p></div>'
+            });
+            
+            setTimeout(() => infoWindow.open(map, map.markers?.[0]), 1000);
+        }
+        
+        window.initMap = initMap;
+        
+        if (typeof google === 'undefined') {
+            document.getElementById('map').innerHTML = '<div style="height:400px;display:flex;align-items:center;justify-content:center;background:#f0f0f0;border-radius:10px;"><div style="text-align:center;"><h3>API Google Maps</h3><p>Remplacez YOUR_API_KEY par votre clé</p><p><strong>CGR Sarcelles:</strong> 48.9936, 2.3772</p></div></div>';
+        }
+    </script>
+    
+    <script async defer src="https://maps.googleapis.com/maps/api/js?key=YOUR_API_KEY&callback=initMap"></script>
 </body>
 </html>
