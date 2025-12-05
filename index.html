@@ -1,21 +1,18 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="fr">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Cinemas IDF</title>
+
   <script src="fetch.js"></script>
-  
+
+  <!-- css -->
   <link rel="stylesheet" href="include/styles.css">
-  <link rel="icon" type="image/png" href="https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Fm4r0ver.github.io%2Fmbbsl2i%2Fimages%2FcyLogo2.png&f=1&nofb=1&ipt=66e621a6e648f4caa1ae46e51ef298216612171845b3ec9e78eeb6be82ee43c2">
 
-
-  
-  <!-- Chargement de la feuille de style de Leaflet depuis le CDN -->
+  <!-- Feuille de style Leaflet -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css" />
   <!-------------------------------------------------->
-
-
 </head>
 <body>
 
@@ -23,18 +20,37 @@
   <div id="map"></div>
   <!-------------------------------------------->
 
-</body>
+  <!-- Panneau de contrôles -->
+  <div id="controls" style="padding:10px; position:relative; z-index:1000; background:#fff;">
 
+    <!-- style de carte -->
+    <label for="map-style-select">Style de carte :</label>
+    <select id="map-style-select">
+      <option value="osm">Classique</option>
+      <option value="satellite">Satellite</option>
+    </select>
+
+    <br><br>
+
+    <!-- Filtre département -->
+    <label for="departement-select">Filtrer par département :</label>
+    <select id="departement-select">
+      <option value="all">Tous les départements</option>
+    </select>
+  </div>
+
+</body>
 
 <!-- Chargement du fichier JavaScript principal de Leaflet depuis le CDN -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
 <!------------------------------------------------------------------------->
 
+<!-- plugin MarkerCluster -->
 <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster/dist/MarkerCluster.css" />
 <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster/dist/MarkerCluster.Default.css" />
 <script src="https://unpkg.com/leaflet.markercluster/dist/leaflet.markercluster.js"></script>
+<!------------------------->
 
 <script src="include/leaflet.js"></script>
-
 
 </html>
