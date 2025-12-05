@@ -6,20 +6,181 @@
     <title>CGR Sarcelles - Mon Cinéma Préféré</title>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { font-family: Arial, sans-serif; background: linear-gradient(135deg, #667eea, #764ba2); color: #333; }
+        body { 
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
+            background: linear-gradient(135deg, #0f1419 0%, #1a2332 50%, #2d3748 100%); 
+            color: #fff; 
+            min-height: 100vh;
+        }
         .container { max-width: 1000px; margin: 0 auto; padding: 20px; }
-        header { background: rgba(255,255,255,0.9); text-align: center; padding: 30px 0; }
-        h1 { font-size: 2.5rem; color: #2c3e50; margin-bottom: 10px; }
-        .section { background: rgba(255,255,255,0.9); margin: 20px 0; padding: 30px; border-radius: 15px; }
-        #map { height: 400px; border-radius: 10px; margin: 20px 0; }
+        header { 
+            background: linear-gradient(135deg, #ff6b35 0%, #f7931e 100%); 
+            text-align: center; 
+            padding: 40px 0; 
+            box-shadow: 0 4px 20px rgba(255, 107, 53, 0.3);
+        }
+        h1 { 
+            font-size: 2.8rem; 
+            color: #fff; 
+            margin-bottom: 10px; 
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+            font-weight: 700;
+        }
+        .section { 
+            background: rgba(45, 55, 72, 0.9); 
+            margin: 25px 0; 
+            padding: 35px; 
+            border-radius: 20px; 
+            border: 1px solid rgba(255, 107, 53, 0.2);
+            backdrop-filter: blur(10px);
+            box-shadow: 0 8px 32px rgba(0,0,0,0.3);
+        }
+        .section h2 { 
+            color: #ff6b35; 
+            margin-bottom: 25px; 
+            font-size: 1.8rem;
+            font-weight: 600;
+        }
+        
+        /* Styles spécifiques pour la section carte */
+        .map-section {
+            background: linear-gradient(135deg, rgba(15, 20, 25, 0.95) 0%, rgba(26, 35, 50, 0.9) 100%);
+            border: 2px solid #ff6b35;
+            position: relative;
+            overflow: hidden;
+        }
+        .map-section::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><pattern id="grid" width="10" height="10" patternUnits="userSpaceOnUse"><path d="M 10 0 L 0 0 0 10" fill="none" stroke="%23ff6b35" stroke-width="0.5" opacity="0.1"/></pattern></defs><rect width="100" height="100" fill="url(%23grid)"/></svg>');
+            pointer-events: none;
+            z-index: 1;
+        }
+        .map-placeholder {
+            height: 450px;
+            background: linear-gradient(45deg, #1a2332, #2d3748);
+            border-radius: 15px;
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 2px dashed #ff6b35;
+            overflow: hidden;
+            z-index: 2;
+        }
+        .map-content {
+            text-align: center;
+            z-index: 3;
+            position: relative;
+        }
+        .cinema-logo {
+            margin-bottom: 20px;
+            animation: floating 3s ease-in-out infinite;
+        }
+        .logo-icon {
+            width: 80px;
+            height: 80px;
+            filter: drop-shadow(0 4px 12px rgba(255, 107, 53, 0.4));
+        }
+        .map-content h3 {
+            color: #ff6b35;
+            font-size: 1.5rem;
+            margin-bottom: 15px;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.5);
+        }
+        .dev-notice {
+            color: #e2e8f0;
+            font-size: 1.1rem;
+            margin-bottom: 25px;
+            line-height: 1.6;
+        }
+        .features-preview {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin: 25px 0;
+        }
+        .feature-item {
+            background: rgba(255, 107, 53, 0.1);
+            padding: 12px 16px;
+            border-radius: 25px;
+            border: 1px solid rgba(255, 107, 53, 0.3);
+            color: #fff;
+            font-size: 0.9rem;
+            transition: all 0.3s ease;
+        }
+        .feature-item:hover {
+            background: rgba(255, 107, 53, 0.2);
+            transform: translateY(-2px);
+        }
+        .git-collab {
+            margin-top: 25px;
+            padding: 15px;
+            background: rgba(0, 255, 127, 0.1);
+            border: 1px solid rgba(0, 255, 127, 0.3);
+            border-radius: 10px;
+            color: #90ee90;
+            font-weight: 500;
+        }
+        .git-icon {
+            font-size: 1.2rem;
+            margin-right: 8px;
+        }
+        
+        @keyframes floating {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-10px); }
+        }
         .info { display: flex; gap: 20px; flex-wrap: wrap; margin: 20px 0; }
-        .info div { background: #f8f9fa; padding: 15px; border-radius: 8px; flex: 1; min-width: 200px; }
+        .info div { 
+            background: rgba(255, 107, 53, 0.1); 
+            padding: 18px; 
+            border-radius: 12px; 
+            flex: 1; 
+            min-width: 200px; 
+            border: 1px solid rgba(255, 107, 53, 0.2);
+            color: #fff;
+        }
+        .info div strong {
+            color: #ff6b35;
+        }
         .stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 15px; }
-        .stat { background: linear-gradient(135deg, #667eea, #764ba2); color: white; padding: 20px; border-radius: 10px; text-align: center; }
-        .stat.fav { background: linear-gradient(135deg, #ff4757, #ff3742); }
-        .stat h3 { font-size: 2rem; margin-bottom: 5px; }
-        footer { text-align: center; color: white; padding: 20px; }
-        @media (max-width: 768px) { h1 { font-size: 2rem; } .info { flex-direction: column; } }
+        .stat { 
+            background: linear-gradient(135deg, #ff6b35, #f7931e); 
+            color: white; 
+            padding: 25px; 
+            border-radius: 15px; 
+            text-align: center;
+            box-shadow: 0 4px 15px rgba(255, 107, 53, 0.3);
+            transition: transform 0.3s ease;
+        }
+        .stat:hover {
+            transform: translateY(-5px);
+        }
+        .stat.fav { 
+            background: linear-gradient(135deg, #e53e3e, #ff4757); 
+            box-shadow: 0 4px 15px rgba(229, 62, 62, 0.4);
+        }
+        .stat h3 { font-size: 2.2rem; margin-bottom: 8px; font-weight: 700; }
+        footer { 
+            text-align: center; 
+            color: #ff6b35; 
+            padding: 25px; 
+            background: rgba(15, 20, 25, 0.8);
+            border-radius: 15px;
+            margin-top: 30px;
+        }
+        @media (max-width: 768px) { 
+            h1 { font-size: 2.2rem; } 
+            .info { flex-direction: column; }
+            .features-preview { grid-template-columns: 1fr; }
+            .map-placeholder { height: 350px; }
+            .section { padding: 25px; }
+        }
     </style>
 </head>
 <body>
@@ -40,12 +201,29 @@
             </div>
         </div>
 
-        <div class="section">
-            <h2>Localisation</h2>
-            <div id="map"></div>
-            <p style="text-align: center; margin-top: 10px;">
-                * Mon cinéma préféré | + Autres cinémas
-            </p>
+        <div class="section map-section">
+            <h2>🎬 Carte Interactive - Cinémas UGC & CGR</h2>
+            <div class="map-placeholder">
+                <div class="map-content">
+                    <div class="cinema-logo">
+                        <img src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iODAiIGhlaWdodD0iODAiIHZpZXdCb3g9IjAgMCA4MCA4MCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPGNpcmNsZSBjeD0iNDAiIGN5PSI0MCIgcj0iNDAiIGZpbGw9IiNGRkY1MDUiLz4KPHN2ZyB4PSIyMCIgeT0iMjAiIHdpZHRoPSI0MCIgaGVpZ2h0PSI0MCIgdmlld0JveD0iMCAwIDI0IDI0IiBmaWxsPSIjMjkzMzVCIj4KPHBhdGggZD0iTTE5IDNoLTEuNTNMMTYgNWgtMUwxMyAzaC0yTDkgNUg4TDYuNTMgM0g1QzMuOSAzIDMgMy45IDMgNXYxNC41YzAgMS4xLjkgMiAyIDJoMTRjMS4xIDAgMi0uOSAyLTJWNWMwLTEuMS0uOS0yLTItMnptMCAxNi41SDV2LTEzaDE0djEzeiIvPgo8L3N2Zz4KPC9zdmc+" alt="Cinéma" class="logo-icon">
+                    </div>
+                    <h3>🚧 Section en Développement 🚧</h3>
+                    <p class="dev-notice">
+                        Cette section sera développée par l'équipe Maps.<br>
+                        Intégration prévue : <strong>Google Maps API</strong> avec localisation interactive des cinémas.
+                    </p>
+                    <div class="features-preview">
+                        <div class="feature-item">🎯 Localisation CGR Sarcelles</div>
+                        <div class="feature-item">🗺️ Carte interactive complète</div>
+                        <div class="feature-item">📍 Points d'intérêt à proximité</div>
+                        <div class="feature-item">🚇 Accès transports en commun</div>
+                    </div>
+                    <div class="git-collab">
+                        <span class="git-icon">🔗</span> Collaboration GitHub en cours...
+                    </div>
+                </div>
+            </div>
         </div>
 
         <div class="section">
@@ -61,43 +239,8 @@
 
     <footer>
         <div class="container">
-            <p>SAE 303 - Intégration Google Maps API</p>
+            <p>🎬 SAE 303 - Projet Cinéma UGC/CGR | Développement collaboratif GitHub</p>
         </div>
     </footer>
-
-    <script>
-        let map;
-        const cgr = { lat: 48.9936, lng: 2.3772 };
-        
-        function initMap() {
-            map = new google.maps.Map(document.getElementById('map'), {
-                zoom: 12,
-                center: cgr
-            });
-            
-            new google.maps.Marker({
-                position: cgr,
-                map: map,
-                title: 'CGR Sarcelles - Mon cinéma préféré',
-                icon: 'data:image/svg+xml;charset=UTF-8,' + encodeURIComponent(
-                    '<svg width="30" height="30" xmlns="http://www.w3.org/2000/svg"><circle cx="15" cy="15" r="12" fill="#ff4757" stroke="white" stroke-width="2"/><text x="15" y="20" font-size="14" fill="white" text-anchor="middle">*</text></svg>'
-                )
-            });
-            
-            const infoWindow = new google.maps.InfoWindow({
-                content: '<div style="padding:10px;"><h4>CGR Sarcelles</h4><p><strong>Mon cinéma préféré</strong></p><p>Centre Commercial O\'Parinor</p><p>Lat: 48.9936 | Lng: 2.3772</p></div>'
-            });
-            
-            setTimeout(() => infoWindow.open(map, map.markers?.[0]), 1000);
-        }
-        
-        window.initMap = initMap;
-        
-        if (typeof google === 'undefined') {
-            document.getElementById('map').innerHTML = '<div style="height:400px;display:flex;align-items:center;justify-content:center;background:#f0f0f0;border-radius:10px;"><div style="text-align:center;"><h3>API Google Maps</h3><p>Remplacez YOUR_API_KEY par votre clé</p><p><strong>CGR Sarcelles:</strong> 48.9936, 2.3772</p></div></div>';
-        }
-    </script>
-    
-    <script async defer src="https://maps.googleapis.com/maps/api/js?key=YOUR_API_KEY&callback=initMap"></script>
 </body>
 </html>
