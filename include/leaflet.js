@@ -1,114 +1,54 @@
-
-
-// ======= Initialisation de la carte =======
+// ================== Configuration de la carte ==================
 const map = L.map('map').setView([48.8566, 2.3522], 10);
-// ==========================================
 
 
 
-
-
-
-// ======Définition des styles de carte=======
-
-// plan classique
+// ================== Styles de carte ==================
 const osmLayer = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-  attribution: '&copy; OpenStreetMap contributors'
+  attribution: '&copy; OpenStreetMap'
 });
 
-// vue satellite
 const satelliteLayer = L.tileLayer(
   'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',
-  {
-    attribution: 'Tiles &copy; Esri'
-  }
+  { attribution: 'Tiles &copy; Esri' }
 );
-// ============================================
 
 
 
-
-
-
-// ======== Récupère le style de carte choisi dans l'index ========
+// ================== Gestion du style de carte ==================
 const mapStyleSelect = document.getElementById('map-style-select');
-// ================================================================
 
-
-
-
-
-
-// ===== Appplique le style de carte choisi =====
 function applyBaseLayer(style) {
-  // On enlève les deux (si présents)
   if (map.hasLayer(osmLayer)) map.removeLayer(osmLayer);
   if (map.hasLayer(satelliteLayer)) map.removeLayer(satelliteLayer);
 
-  if (style === 'satellite') {
-    satelliteLayer.addTo(map);
-  } else {
-    // valeur par défaut
-    osmLayer.addTo(map);
-  }
+  (style === 'satellite' ? satelliteLayer : osmLayer).addTo(map);
 }
-// ===============================================
 
-
-
-
-
-
-// ===== Style par défaut au chargement =====
+// Style de carte par défaut
 applyBaseLayer(mapStyleSelect ? mapStyleSelect.value : 'osm');
-// ==========================================
 
 
-
-
-
-
-// ====== changement de style ======
+// Changement de style
 if (mapStyleSelect) {
-  mapStyleSelect.addEventListener('change', (e) => {
+  mapStyleSelect.addEventListener('change', e => {
     applyBaseLayer(e.target.value);
   });
 }
-// ==================================
 
 
 
-
-
-
-// ======== MarkerCluster (groupement des marqueurs selon les départements) ========
+// ================== Config des marqueurs ==================
 const markerCluster = L.markerClusterGroup();
 map.addLayer(markerCluster);
-// =================================================================================
 
-
-
-
-
-
-// ====== Conserver en mémoire les marqueurs =======
 const allMarkers = [];
-// =================================================
 
 
 
-
-
-// ======= Récupère la liste déroulante dans l'index ======
+// ================== Table pour associer les départements avec leurs noms ==================
 const depSelect = document.getElementById('departement-select');
-// ========================================================
 
-
-
-
-
-
-// ========= Etablir la liste des noms des départements =========
 const depNames = {
   "75": "Paris",
   "77": "Seine-et-Marne",
@@ -119,123 +59,92 @@ const depNames = {
   "94": "Val-de-Marne",
   "95": "Val-d'Oise"
 };
-// ===============================================================
 
 
 
-
-
-
-// ======= Raffraîchissement ========
-function refreshMarkers(selectedDep) {
-  // Supprime tous les marqueurs du cluster
+// ================== Fonction de filtrage des marqueurs ==================
+function refreshMarkers(dep) {
   markerCluster.clearLayers();
 
-  // Filtre les marqueurs selon le département
-  const markersToShow = allMarkers.filter(marker => {
-    if (!selectedDep || selectedDep === 'all') return true;
-    return marker.dep && marker.dep.toString() === selectedDep.toString();
+  allMarkers.forEach(marker => {
+    if (dep === 'all' || marker.dep === dep) {
+      markerCluster.addLayer(marker);
+    }
   });
-
-  // Ajoute les marqueurs filtrés au cluster
-  markersToShow.forEach(marker => markerCluster.addLayer(marker));
 }
-// ==================================
 
 
 
+// ================== Affichage du chargement ==================
+const loader = document.getElementById('loader');
+if (loader) loader.style.display = 'block';
 
 
 
-// ======= Chargement des données du fichier JS =======
+// ================== Chargement des données cinémas ==================
 fetch('include/cinema.json')
-  .then(res => res.json())
+  .then(res => {
+    if (!res.ok) throw new Error('Erreur HTTP ' + res.status);
+    return res.json();
+  })
   .then(data => {
-    
-    const depsSet = new Set();
+    const deps = [];
 
     data.forEach(cinema => {
       if (!cinema.geo) return;
 
-      // ======== Latitude et Longitude ==========
       const [latStr, lonStr] = cinema.geo.split(',');
       const lat = parseFloat(latStr);
       const lon = parseFloat(lonStr);
-      // =========================================
-
       if (isNaN(lat) || isNaN(lon)) return;
 
-      // ======== Récupère le code et le nom du département ===========
-      const depCode = cinema.dep != null ? cinema.dep.toString() : '';
-      const depLabel = depNames[depCode] || depCode || 'Département inconnu';
-      // ==============================================================
+      const dep = cinema.dep ? cinema.dep.toString() : '';
 
-      // ======= Création du marqueur =======
+      // Création du marqueur
       const marker = L.marker([lat, lon]).bindPopup(`
         <strong>${cinema.nom}</strong><br>
         ${cinema.adresse || ''}<br>
         ${cinema.commune || ''}<br>
-        ${depLabel}
+        ${depNames[dep] || dep}
       `);
-      // =====================================
 
-      // ====== Ajoute l'info de département au marqueur pour le filtrage =====
-      marker.dep = depCode;
-      // ======================================================================
-
-      // ====== Stocke le marqueur ======
+      marker.dep = dep;
       allMarkers.push(marker);
-      // ================================
 
-      // ====== Enregistrement du departement ======
-      if (depCode) {
-        depsSet.add(depCode);
+      if (dep && !deps.includes(dep)) {
+        deps.push(dep);
       }
-      // ===========================================
-
     });
 
-    // ====== Ajout dynamique des options de département dans la liste déroulante ======
+    // Remplissage de la liste déroulante des départements
     if (depSelect) {
-      const baseOption = depSelect.querySelector('option[value="all"]');
-      depSelect.innerHTML = '';
-      if (baseOption) {
-        depSelect.appendChild(baseOption);
-      } else {
-        const optAll = document.createElement('option');
-        optAll.value = 'all';
-        optAll.textContent = 'Tous les départements';
-        depSelect.appendChild(optAll);
-      }
+      depSelect.innerHTML = '<option value="all">Tous les départements</option>';
 
-      // ======= Trie les départements par code =======
-      const deps = Array.from(depsSet).sort((a, b) => a.localeCompare(b));
-
-      deps.forEach(dep => {
+      deps.sort().forEach(dep => {
         const opt = document.createElement('option');
         opt.value = dep;
-        opt.textContent = depNames[dep] || dep; // nom du département
+        opt.textContent = depNames[dep] || dep;
         depSelect.appendChild(opt);
       });
-      // ==============================================
-
     }
-    //================================================================================
 
-    // ======= Affichage de tous les marqueurs =======
+
+    // Affichage des marqueurs
     refreshMarkers('all');
-    // ===============================================
-
   })
   .catch(err => {
-    console.error('Erreur lors du chargement des données des cinémas :', err);
+    console.error(err);
+    alert('Erreur lors du chargement des données');
+  })
+  .finally(() => {
+    if (loader) loader.style.display = 'none';
   });
-// ===================================================
 
+  
 
+// ================== Filtre départements ==================
 if (depSelect) {
   depSelect.addEventListener('change', () => {
-    const selectedDep = depSelect.value;
-    refreshMarkers(selectedDep);
+    refreshMarkers(depSelect.value);
   });
 }
